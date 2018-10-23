@@ -39,6 +39,31 @@ abb_nodo_t* abb_nodo_buscar(abb_t* abb, char* clave_buscada, abb_nodo_t* nodo_ac
 	
 }
 
+void _abb_destruir_nodos(abb_nodo_t* nodo_actual,abb_destruir_dato_t destruir_dato){
+	if(!nodo_actual) return;
+
+	_abb_destruir_nodos(nodo_actual->izq,destruir_dato);
+	_abb_destruir_nodos(nodo_actual->der,destruir_dato);
+
+	if(destruir_dato){
+		destruir_dato(nodo_actual->dato);
+	}
+	free(nodo_actual->clave);
+	free(nodo_actual);
+}
+
+size_t nodo_cant_hijos(abb_nodo_t* nodo){
+	size_t cant_hijos = 0;
+	if(nodo->izq){
+		cant_hijos++;
+	}
+	if(nodo->der){
+		cant_hijos++;
+	}
+
+	return cant_hijos;
+}
+
 /* ============== PRIMITIVAS DE ABB ============== */
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
@@ -54,28 +79,6 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 	return arbol;
 }
 
-bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
-	
-	abb_nodo_t* nodo = malloc(sizeof(abb_nodo_t));
-	if(!nodo) return false;
-
-	nodo->clave = strdup(clave);
-	if(!nodo->clave){
-		free( nodo );
-		return false;
-	}
-	nodo->dato = dato;
-	arbol->cantidad++;
-
-	if(!arbol->raiz){
-		arbol->raiz = nodo;
-		return true;
-	}
-
-	return abb_nodo_insertar(arbol, nodo); 
-}
-
-
 size_t abb_cantidad(abb_t* arbol){
 	return arbol->cantidad;
 }
@@ -87,6 +90,13 @@ bool abb_pertenece(const abb_t *arbol, const char *clave){
 	}
 	return false;
 }
+
+void abb_destruir(abb_t *arbol){
+	_abb_destruir_nodos(arbol->raiz,arbol->destruir_dato);
+	free(arbol);
+}
+
+
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
 
 
