@@ -76,8 +76,17 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
 }
 
 
+size_t abb_cantidad(abb_t* arbol){
+	return arbol->cantidad;
+}
 
-
+bool abb_pertenece(const abb_t *arbol, const char *clave){
+	abb_nodo_t* padre = NULL;
+	if(abb_nodo_buscar((abb_t*)arbol,(char*)clave,arbol->raiz,&padre)){
+		return true;
+	}
+	return false;
+}
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
 
 
