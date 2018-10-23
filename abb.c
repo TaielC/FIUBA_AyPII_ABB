@@ -21,24 +21,23 @@ typedef struct abb{
 }abb_t;
 
 /* ------------- FUNCIONES AUXILIARES ------------- */
+
 abb_nodo_t* abb_nodo_buscar(abb_t* abb, char* clave_buscada, abb_nodo_t* nodo_actual, abb_nodo_t** padre){
 	if(!nodo_actual) return NULL;
 
 	int comparacion_claves = abb->comparar_clave(clave_buscada,nodo_actual->clave);
 
-	if(comparacion_claves==0){
+	if(comparacion_claves==0)
 		return nodo_actual;
-	}
 
 	*padre = nodo_actual;
 
-	if(comparacion_claves>0){
+	if(comparacion_claves>0)
 		return abb_nodo_buscar(abb,clave_buscada, nodo_actual->der,padre);
-	}else{
+	else
 		return abb_nodo_buscar(abb,clave_buscada, nodo_actual->izq,padre);
-	}
+	
 }
-
 
 /* ============== PRIMITIVAS DE ABB ============== */
 
@@ -73,9 +72,7 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
 		return true;
 	}
 
-	abb_nodo_t guardar = abb_nodo_buscar();
-
-	return true;
+	return abb_nodo_insertar(arbol, nodo); 
 }
 
 
