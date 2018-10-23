@@ -24,6 +24,19 @@ typedef struct abb{
 
 /* ============== PRIMITIVAS DE ABB ============== */
 
+abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
+
+	abb_t* abb = malloc(sizeof(abb_t));
+	if(!abb) return NULL;
+
+	abb->raiz = NULL;
+	abb->destruir_dato = destruir_dato;
+	abb->comparar_clave = cmp;
+	abb->cantidad = 0;
+
+	return abb;
+}
+
 
 
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
