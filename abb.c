@@ -27,7 +27,7 @@ abb_nodo_t* abb_nodo_buscar(abb_t* abb, char* clave_buscada, abb_nodo_t* nodo_ac
 
 	int comparacion_claves = abb->comparar_clave(clave_buscada,nodo_actual->clave);
 
-	if(comparacion_claves==0)
+	if(!comparacion_claves)
 		return nodo_actual;
 
 	*padre = nodo_actual;
@@ -36,7 +36,28 @@ abb_nodo_t* abb_nodo_buscar(abb_t* abb, char* clave_buscada, abb_nodo_t* nodo_ac
 		return abb_nodo_buscar(abb,clave_buscada, nodo_actual->der,padre);
 	else
 		return abb_nodo_buscar(abb,clave_buscada, nodo_actual->izq,padre);
-	
+}
+
+bool abb_nodo_insertar(abb_t* arbol, abb_nodo_t** nodo_actual, const char* clave_guardar, void* dato){
+	if(!(*nodo_actual)){
+		abb_nodo_t* nodo = malloc(sizeof(abb_nodo_t));
+		if( !nodo ) return false;
+		nodo->clave = strdup(clave_guardar);
+		nodo->dato = dato;
+		*nodo_actual = nodo;
+		return true;
+	}
+
+	int comparacion_claves = arbol->comparar_clave( clave_guardar, (*nodo_actual)->clave);
+
+	if(!comparacion_claves){
+		(*nodo_actual)->dato = dato;
+		return true;
+	}
+	else if( comparacion_claves > 0 )
+		return abb_nodo_insertar( arbol , &(*nodo_actual)->der, clave_guardar, dato);
+	else 
+		return abb_nodo_insertar( arbol , &(*nodo_actual)->der, clave_guardar, dato);
 }
 
 /* ============== PRIMITIVAS DE ABB ============== */
@@ -55,24 +76,8 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 }
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
-	
-	abb_nodo_t* nodo = malloc(sizeof(abb_nodo_t));
-	if(!nodo) return false;
 
-	nodo->clave = strdup(clave);
-	if(!nodo->clave){
-		free( nodo );
-		return false;
-	}
-	nodo->dato = dato;
-	arbol->cantidad++;
-
-	if(!arbol->raiz){
-		arbol->raiz = nodo;
-		return true;
-	}
-
-	return abb_nodo_insertar(arbol, nodo); 
+	return abb_nodo_insertar(arbol, &arbol->raiz, clave, dato); 
 }
 
 
