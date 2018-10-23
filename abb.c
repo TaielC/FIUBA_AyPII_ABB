@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "abb.h"
 
@@ -26,16 +27,40 @@ typedef struct abb{
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 
-	abb_t* abb = malloc(sizeof(abb_t));
-	if(!abb) return NULL;
+	abb_t* arbol = malloc(sizeof(abb_t));
+	if(!arbol) return NULL;
 
-	abb->raiz = NULL;
-	abb->destruir_dato = destruir_dato;
-	abb->comparar_clave = cmp;
-	abb->cantidad = 0;
+	arbol->raiz = NULL;
+	arbol->destruir_dato = destruir_dato;
+	arbol->comparar_clave = cmp;
+	arbol->cantidad = 0;
 
-	return abb;
+	return arbol;
 }
+
+bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
+	
+	abb_nodo_t* nodo = malloc(sizeof(abb_nodo_t));
+	if(!nodo) return false;
+
+	nodo->clave = strdup(clave);
+	if(!nodo->clave){
+		free( nodo );
+		return false;
+	}
+	nodo->dato = dato;
+	arbol->cantidad++;
+
+	if(!arbol->raiz){
+		arbol->raiz = nodo;
+		return true;
+	}
+
+	abb_nodo_t guardar = abb_nodo_buscar();
+
+	return true;
+}
+
 
 
 
