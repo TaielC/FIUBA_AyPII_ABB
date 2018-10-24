@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -103,7 +104,7 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
 	return abb_nodo_insertar(arbol, &arbol->raiz, clave, dato);
 }
- 
+
 size_t abb_cantidad(abb_t* arbol){
 	return arbol->cantidad;
 }
