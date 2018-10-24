@@ -72,15 +72,18 @@ bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 
 void* abb_destruir_nodo( abb_nodo_t* nodo ){
 	if(!nodo) return NULL;
+	void* dato = nodo->dato;
 	free(nodo->clave);
+	
 	free(nodo);
+	return dato;
 }
 
-void _abb_destruir_nodos(abb_nodo_t* nodo_actual,abb_destruir_dato_t destruir_dato){
+void abb_destruir_nodos(abb_nodo_t* nodo_actual,abb_destruir_dato_t destruir_dato){
 	if(!nodo_actual) return;
 
-	_abb_destruir_nodos(nodo_actual->izq,destruir_dato);
-	_abb_destruir_nodos(nodo_actual->der,destruir_dato);
+	abb_destruir_nodos(nodo_actual->izq,destruir_dato);
+	abb_destruir_nodos(nodo_actual->der,destruir_dato);
 
 	void* dato = abb_destruir_nodo(nodo_actual);
 	if( destruir_dato )
@@ -114,16 +117,6 @@ void abb_swap_nodos( abb_nodo_t* nodo_1, abb_nodo_t* nodo_2){
 	abb_nodo_t* aux = nodo_1;
 	nodo_1 = nodo_2;
 	nodo_2 = aux;
-}
-
-void _abb_in_order(abb_nodo_t* nodo,bool visitar(const char *, void *, void *),void* extra){
-	if(!nodo) return;
-
-	_abb_in_order(nodo->izq,visitar,extra);
-
-	if(visitar(nodo->clave,nodo->dato,extra)){
-		_abb_in_order(nodo->der,visitar,extra);
-	}
 }
 
 void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
@@ -196,13 +189,23 @@ bool abb_pertenece(const abb_t *arbol, const char *clave){
 }
 
 void abb_destruir(abb_t *arbol){
-	_abb_destruir_nodos(arbol->raiz,arbol->destruir_dato);
+	abb_destruir_nodos(arbol->raiz,arbol->destruir_dato);
 	free(arbol);
 }
 
 
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
 
+
+void _abb_in_order(abb_nodo_t* nodo,bool visitar(const char *, void *, void *),void* extra){
+	if(!nodo) return;
+
+	_abb_in_order(nodo->izq,visitar,extra);
+
+	if(visitar(nodo->clave,nodo->dato,extra)){
+		_abb_in_order(nodo->der,visitar,extra);
+	}
+}
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
 	_abb_in_order(arbol->raiz,visitar,extra);
