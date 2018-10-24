@@ -85,6 +85,16 @@ size_t nodo_cant_hijos(abb_nodo_t* nodo){
 	return cant_hijos;
 }
 
+void _abb_in_order(abb_nodo_t* nodo,bool visitar(const char *, void *, void *),void* extra){
+	if(!nodo) return;
+
+	_abb_in_order(nodo->izq,visitar,extra);
+
+	if(visitar(nodo->clave,nodo->dato,extra)){
+		_abb_in_order(nodo->der,visitar,extra);
+	}
+}
+
 /* ============== PRIMITIVAS DE ABB ============== */
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
@@ -125,7 +135,9 @@ void abb_destruir(abb_t *arbol){
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
 
 
-
+void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
+	_abb_in_order(arbol->raiz,visitar,extra);
+}
 
 /* ========== PIMITIVAS DEL ITER INTERNO ========== */
 
