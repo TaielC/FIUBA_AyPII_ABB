@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "pila.h"
 #include "abb.h"
 
 /* ============ TIPOS DE DATOS PARA ABB =========== */
@@ -20,6 +21,10 @@ typedef struct abb{
 	int cantidad;
 }abb_t;
 
+typedef struct abb_iter{
+	abb_t* arbol;
+	pila_t* pila;
+}abb_iter_t;
 /* ------------- FUNCIONES AUXILIARES ------------- */
 
 abb_nodo_t* abb_nodo_buscar(abb_t* abb, char* clave_buscada, abb_nodo_t* nodo_actual, abb_nodo_t** padre){
@@ -95,6 +100,12 @@ void _abb_in_order(abb_nodo_t* nodo,bool visitar(const char *, void *, void *),v
 	}
 }
 
+void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
+	while(nodo){
+		pila_apilar(pila,nodo);
+		nodo = nodo->izq;
+	}
+}
 /* ============== PRIMITIVAS DE ABB ============== */
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
@@ -139,7 +150,41 @@ void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void
 	_abb_in_order(arbol->raiz,visitar,extra);
 }
 
-/* ========== PIMITIVAS DEL ITER INTERNO ========== */
+/* ========== PIMITIVAS DEL ITER EXTERNO ========== */
 
+abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
+	abb_iter_t* iterador = malloc(sizeof(abb_iter_t));
+	if(!iterador) return NULL;
 
+	iterador->pila = pila_crear();
+	if(!iterador->pila){
+		free(iterador);
+		return NULL;
+	}
 
+	iterador->arbol = (abb_t*) arbol;
+	abb_apilar_izquierdos(iterador->pila,arbol->raiz);
+
+	return iterador;
+}
+
+bool abb_iter_in_avanzar(abb_iter_t *iter){
+	if(pila_esta_vacia(iter->pila)) return false;
+
+	abb_nodo_t* desapilado = pila_desapilar(iter->pila);
+	abb_apilar_izquierdos(iter->pila,desapilado->der);
+	return true;
+}
+
+const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
+	return pila_ver_tope(iter->pila);
+}
+
+bool abb_iter_in_al_final(const abb_iter_t *iter){
+	return pila_esta_vacia(iter->pila);
+}
+
+void abb_iter_in_destruir(abb_iter_t* iter){
+	pila_destruir(iter->pila);
+	free(iter);
+}
