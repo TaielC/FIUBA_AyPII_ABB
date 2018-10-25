@@ -120,13 +120,6 @@ void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
 	}
 }
 
-void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
-	while(nodo){
-		pila_apilar(pila,nodo);
-		nodo = nodo->izq;
-	}
-}
-
 /* ============== PRIMITIVAS DE ABB ============== */
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
@@ -195,6 +188,14 @@ void abb_destruir(abb_t *arbol){
 	free(arbol);
 }
 
+void *abb_obtener(const abb_t *arbol, const char *clave){
+	abb_t* arbol_buscar = (abb_t*)arbol;
+	abb_nodo_t** nodo = abb_nodo_buscar(arbol_buscar,clave,&arbol_buscar->raiz);
+	if(*nodo){
+		return (*nodo)->dato;
+	}
+	return NULL;
+}
 
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
 
