@@ -102,21 +102,22 @@ size_t nodo_cant_hijos(abb_nodo_t* nodo){
 	return cant_hijos;
 }
 
-abb_nodo_t** abb_buscar_siguiente( abb_t* arbol, abb_nodo_t** nodo_actual){
-	if(!*nodo_actual) return NULL;
-	if(!(*nodo_actual)->der) return NULL;
-	*nodo_actual = (*nodo_actual)->der;
+abb_nodo_t* abb_buscar_siguiente( abb_t* arbol, abb_nodo_t* nodo_actual){
+	if(!nodo_actual) return NULL;
+	if(!nodo_actual->der) return NULL;
+	nodo_actual = nodo_actual->der;
 
-	while((*nodo_actual)->izq)
-		*nodo_actual = (*nodo_actual)->izq;
+	while(nodo_actual->izq)
+		nodo_actual = nodo_actual->izq;
 
 	return nodo_actual;
 }
 
-void abb_swap_nodos( abb_nodo_t* nodo_1, abb_nodo_t* nodo_2){
-	abb_nodo_t* aux = nodo_1;
-	nodo_1 = nodo_2;
-	nodo_2 = aux;
+void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
+	while(nodo){
+		pila_apilar(pila,nodo);
+		nodo = nodo->izq;
+	}
 }
 
 void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
@@ -167,10 +168,11 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 		*nodo_borrar = reemplazante;
 	}
 	else{
-		abb_nodo_t** reemplazante = abb_buscar_siguiente( arbol, nodo_borrar);
-		abb_swap_nodos( *reemplazante, *nodo_borrar);
-		dato = abb_destruir_nodo(*reemplazante);
-		*reemplazante = NULL;
+		abb_nodo_t* reemplazante = abb_buscar_siguiente( arbol, *nodo_borrar);
+		char* clave_reemplazante = strdup(reemplazante->clave);
+		dato = (*nodo_borrar)->dato;
+		(*nodo_borrar)->dato = abb_borrar( arbol, clave_reemplazante);
+		(*nodo_borrar)->clave = clave_reemplazante;
 	}
 	arbol->cantidad--;
 	return dato;
