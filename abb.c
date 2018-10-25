@@ -50,20 +50,29 @@ bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 	if(!*nodo){
 		abb_nodo_t* nodo_guardar = malloc(sizeof(abb_nodo_t));
 		if( !nodo ) return false;
+		
+		nodo_guardar->clave = NULL;
+		nodo_guardar->der = NULL;
+		nodo_guardar->izq = NULL;
+		nodo_guardar->dato = NULL;
+
 		nodo_guardar->clave = strdup(clave_guardar);
+
 		if( !nodo_guardar->clave ){
 			free(nodo);
 			return false;
 		}
+
 		nodo_guardar->dato = dato;
 		*nodo = nodo_guardar;
+
 		arbol->cantidad++;
 		return true;
 	}
 
 	int comparacion_claves = arbol->comparar_clave( clave_guardar, (*nodo)->clave);
 
-	if(!comparacion_claves){
+	if(comparacion_claves==0){
 		(*nodo)->dato = dato;
 		return true;
 	}
@@ -102,7 +111,7 @@ size_t nodo_cant_hijos(abb_nodo_t* nodo){
 	return cant_hijos;
 }
 
-abb_nodo_t* abb_buscar_siguiente( abb_t* arbol, abb_nodo_t* nodo_actual){
+abb_nodo_t* abb_buscar_reemplazante( abb_t* arbol, abb_nodo_t* nodo_actual){
 	if(!nodo_actual) return NULL;
 	if(!nodo_actual->der) return NULL;
 	nodo_actual = nodo_actual->der;
@@ -137,14 +146,15 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
 	return abb_nodo_insertar(arbol, clave, dato);
+
 }
 
 void* abb_borrar(abb_t* arbol, const char* clave){
 
 	abb_nodo_t** nodo_borrar = abb_nodo_buscar(arbol, clave, &arbol->raiz);
-	if(!*nodo_borrar) NULL;
+	if(!*nodo_borrar) return NULL;
 
-	int cant_hijos = nodo_cant_hijos( *nodo_borrar );
+	size_t cant_hijos = nodo_cant_hijos( *nodo_borrar );
 	void* dato = NULL;
 	if(cant_hijos == 0){
 		dato = abb_destruir_nodo( *nodo_borrar );
@@ -161,7 +171,7 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 		*nodo_borrar = reemplazante;
 	}
 	else{
-		abb_nodo_t* reemplazante = abb_buscar_siguiente( arbol, *nodo_borrar);
+		abb_nodo_t* reemplazante = abb_buscar_reemplazante( arbol, *nodo_borrar);
 		char* clave_reemplazante = strdup(reemplazante->clave);
 		dato = (*nodo_borrar)->dato;
 		(*nodo_borrar)->dato = abb_borrar( arbol, clave_reemplazante);
