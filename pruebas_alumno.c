@@ -6,6 +6,10 @@
 #include "testing.h"
 #include "abb.h"
 
+#define GRAN_VOL 10000
+#define LARGO_CLAVE 10
+#define FIN_STRING '\0'
+
 void pruebas_crear_abb_vacio(void){
 	abb_t* arbol = abb_crear(strcmp, NULL);
 
@@ -122,7 +126,70 @@ void pruebas_abb_reemplazar_destruir(){
 
 }
 
+void crear_array_para_insertar_ordenado(char** claves, int* index, int maximo, int minimo){
+    if(maximo == 0 || maximo <= minimo) return;
+    claves[*index] = malloc(sizeof(char)*LARGO_CLAVE);
+
+    int medio = (maximo+minimo)/2;
+
+    if(medio>= 1000)
+        sprintf( claves[*index], "%d%c", medio, FIN_STRING);
+    else if(medio >= 100)
+        sprintf( claves[*index], "0%d%c", medio, FIN_STRING);
+    else if(medio >= 10)
+        sprintf( claves[*index], "00%d%c", medio, FIN_STRING);
+    else
+        sprintf( claves[*index], "000%d%c", medio, FIN_STRING);
+    (*index)++;
+    crear_array_para_insertar_ordenado(claves, index, medio, minimo );
+    crear_array_para_insertar_ordenado(claves, index, maximo, medio+1);
+
+}
+
+void pruebas_abb_maximo(void){
+
+    char* claves[GRAN_VOL];
+    int posicion = 0;
+    crear_array_para_insertar_ordenado(claves, &posicion, GRAN_VOL, 0);
+    bool ok_guardar = true;
+
+    abb_t* abb = abb_crear(strcmp, free);
+    for(posicion = 0; posicion < GRAN_VOL ; posicion++ ){
+        ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
+    }
+    print_test("Pruebas abb volumen, insertar muchos elementos", ok_guardar );
+
+    bool ok_borrar = true;
+    bool ok_pertenece = false;
+    for(posicion = 13; posicion < GRAN_VOL ; posicion+=7){
+        ok_borrar &= (abb_borrar(abb, claves[posicion])==claves[posicion]);
+        ok_pertenece |= abb_pertenece(abb, claves[posicion]);
+        free(claves[posicion]);
+    }
+    print_test("Pruebas abb volumen, borrar elementos al azar", ok_borrar );
+    print_test("Pruebas abb volumen, claves borradas no pertenecen", !ok_pertenece );
+
+    ok_pertenece = true;
+    bool ok_obtener = true;
+    for(posicion = 17; posicion < GRAN_VOL; posicion += 7){
+        // ok_pertenece &= abb_pertenece(abb, claves[posicion]);
+        ok_obtener &= (abb_obtener(abb, claves[posicion+1]) == claves[posicion+1]);
+    }
+    // print_test("Pruebas abb volumen, pertenecen claves no borradas", ok_pertenece );
+    print_test("Pruebas abb volumen, obtener claves datos correctos", ok_obtener);
+
+    // for(posicion = 13; posicion < GRAN_VOL; posicion += 7){
+    //     ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
+    // }
+    // print_test("Pruebas abb volumen, guardar elementos borrados", ok_guardar);
+
+    abb_destruir(abb);
+}
+
 void pruebas_abb_alumno(void){
 	pruebas_crear_abb_vacio();
 	pruebas_abb_instertar();
+    pruebas_abb_reemplazar();
+    pruebas_abb_reemplazar_destruir();
+    pruebas_abb_maximo();
 }
