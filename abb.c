@@ -120,13 +120,6 @@ void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
 	}
 }
 
-void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
-	while(nodo){
-		pila_apilar(pila,nodo);
-		nodo = nodo->izq;
-	}
-}
-
 /* ============== PRIMITIVAS DE ABB ============== */
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
