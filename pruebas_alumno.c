@@ -135,10 +135,49 @@ void pruebas_abb_clave_vacia(){
 
 	abb_destruir(abb);
 }
+
+bool comprobar_in_order(const char* clave,void* valor,void* extra){
+	if(*(int*)valor>((int*)extra)[0]){
+		((int*)extra)[1]++;
+	}
+
+	return true;
+}
+
+void pruebas_abb_iter_interno(size_t cantidad_iterar){
+	abb_t* abb = abb_crear(strcmp,NULL);
+
+	int arreglo[cantidad_iterar];
+
+	size_t largo_clave = 10;
+	char (*claves)[largo_clave] = malloc(cantidad_iterar*largo_clave);
+	bool ok = true;
+
+	for(int i=0;i<cantidad_iterar;i++){
+		arreglo[i] = i;
+		sprintf(claves[i], "%08d", i);
+		ok &= abb_guardar(abb,claves[i],&arreglo[i]);
+	}
+
+	print_test("Prueba abb guardar varios elementos",ok);
+
+	ok = true;
+
+	int arreglo_test[2] = {0,0};//{Valor anterior, cantidad de veces que se mantuvo el orden};
+
+	abb_in_order(abb,comprobar_in_order,arreglo_test);
+	print_test("Prueba abb iterador interno mantiene in order",arreglo_test[1]==cantidad_iterar-1);
+
+	abb_destruir(abb);
+	free(claves);
+}
+
+
 void pruebas_abb_alumno(void){
 	pruebas_crear_abb_vacio();
 	pruebas_abb_instertar();
 	pruebas_abb_reemplazar();
 	pruebas_abb_reemplazar_destruir();
 	pruebas_abb_clave_vacia();
+	pruebas_abb_iter_interno(50);
 }
