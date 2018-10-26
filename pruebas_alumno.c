@@ -6,6 +6,32 @@
 #include "testing.h"
 #include "abb.h"
 
+
+#define GRAN_VOL 10000
+#define LARGO_CLAVE 10
+#define FIN_STRING '\0'
+
+void crear_array_para_insertar_ordenado(char** claves, int* index, int maximo, int minimo){
+    if(maximo == 0 || maximo <= minimo) return;
+    claves[*index] = malloc(sizeof(char)*LARGO_CLAVE);
+
+    int medio = (maximo+minimo)/2;
+
+    if(medio>= 1000)
+        sprintf( claves[*index], "%d%c", medio, FIN_STRING);
+    else if(medio >= 100)
+        sprintf( claves[*index], "0%d%c", medio, FIN_STRING);
+    else if(medio >= 10)
+        sprintf( claves[*index], "00%d%c", medio, FIN_STRING);
+    else
+        sprintf( claves[*index], "000%d%c", medio, FIN_STRING);
+    (*index)++;
+    crear_array_para_insertar_ordenado(claves, index, medio, minimo );
+    crear_array_para_insertar_ordenado(claves, index, maximo, medio+1);
+
+}
+
+
 void pruebas_crear_abb_vacio(void){
 	abb_t* arbol = abb_crear(strcmp, NULL);
 
@@ -175,12 +201,53 @@ void pruebas_abb_iter_interno(size_t cantidad_iterar){
 void pruebas_abb_iterar_vacio(){
 	abb_t* abb = abb_crear(strcmp,NULL);
 	abb_iter_t* iterador = abb_iter_in_crear(abb);
-	
+
 	print_test("Prueba abb crear iterador sobre arbol vacio",iterador);
 	print_test("Prueba abb iterador esta al final",abb_iter_in_al_final(iterador));
 	print_test("Prueba abb iterador avanzar es false",!abb_iter_in_avanzar(iterador));
 	print_test("Prueba abb iterador ver actual es NULL",!abb_iter_in_ver_actual(iterador));
 
+	abb_iter_in_destruir(iterador);
+	abb_destruir(abb);
+}
+
+void pruebas_abb_iterar_volumen(int cantidad){
+	abb_t* abb = abb_crear(strcmp,NULL);
+
+	char* claves[cantidad];
+
+	int index = 0;
+
+	crear_array_para_insertar_ordenado(claves,&index,cantidad,0);
+
+	bool ok = true;
+
+	for(int i=0;i<cantidad;i++){
+		ok &= abb_guardar(abb,claves[i],NULL);
+	}
+
+	print_test("Prueba abb insertar muchos elementos",ok);
+	abb_iter_t* iterador = abb_iter_in_crear(abb);
+
+	print_test("Prueba abb crear iterador",iterador);
+	print_test("Prueba abb iterador no al final",!abb_iter_in_al_final(iterador));
+
+	ok = true;
+	bool avanzar = true;
+
+	for(int i=0;i<cantidad;i++){
+		ok &= atoi(abb_iter_in_ver_actual(iterador))==i; //Comprobacion del in-order
+		avanzar &= abb_iter_in_avanzar(iterador);
+	}
+
+	print_test("Prueba abb el recorrido in order es el correcto",abb);
+	print_test("Prueba abb se pudo avanzar todas las posiciones",avanzar);
+	print_test("El iterador esta al final",abb_iter_in_al_final(iterador));
+
+	for(int i =0;i<cantidad;i++){
+		free(claves[i]);
+	}
+	
 	abb_iter_in_destruir(iterador);
 	abb_destruir(abb);
 }
@@ -193,4 +260,5 @@ void pruebas_abb_alumno(void){
 	pruebas_abb_clave_vacia();
 	pruebas_abb_iter_interno(50);
 	pruebas_abb_iterar_vacio();
+	pruebas_abb_iterar_volumen(500);
 }
