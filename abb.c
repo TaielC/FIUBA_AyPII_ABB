@@ -172,6 +172,7 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 		dato = (*nodo_borrar)->dato;
 		(*nodo_borrar)->dato = abb_borrar( arbol, clave_reemplazante);
 		arbol->cantidad++; //Compensación por entrar a borrar al reemplazante
+		free((*nodo_borrar)->clave);
 		(*nodo_borrar)->clave = clave_reemplazante;
 	}
 	arbol->cantidad--;

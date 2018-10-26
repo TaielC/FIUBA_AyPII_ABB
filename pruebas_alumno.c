@@ -65,7 +65,7 @@ void pruebas_abb_instertar(void){
     print_test("Prueba abb clave6 pertenece", abb_pertenece(arbol, clave6));
     print_test("Prueba abb borrar con un hijo a izquierda, clave6", abb_borrar(arbol, clave6) == NULL);
     print_test("Prueba abb cantidad es 3", abb_cantidad(arbol) == 3);
-
+    print_test("Prueba abb borrar clave3, no esta, es NULL", abb_borrar(arbol, clave3) == NULL);
     abb_destruir(arbol);
 }
 
