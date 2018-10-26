@@ -172,6 +172,18 @@ void pruebas_abb_iter_interno(size_t cantidad_iterar){
 	free(claves);
 }
 
+void pruebas_abb_iterar_vacio(){
+	abb_t* abb = abb_crear(strcmp,NULL);
+	abb_iter_t* iterador = abb_iter_in_crear(abb);
+	
+	print_test("Prueba abb crear iterador sobre arbol vacio",iterador);
+	print_test("Prueba abb iterador esta al final",abb_iter_in_al_final(iterador));
+	print_test("Prueba abb iterador avanzar es false",!abb_iter_in_avanzar(iterador));
+	print_test("Prueba abb iterador ver actual es NULL",!abb_iter_in_ver_actual(iterador));
+
+	abb_iter_in_destruir(iterador);
+	abb_destruir(abb);
+}
 
 void pruebas_abb_alumno(void){
 	pruebas_crear_abb_vacio();
@@ -180,4 +192,5 @@ void pruebas_abb_alumno(void){
 	pruebas_abb_reemplazar_destruir();
 	pruebas_abb_clave_vacia();
 	pruebas_abb_iter_interno(50);
+	pruebas_abb_iterar_vacio();
 }
