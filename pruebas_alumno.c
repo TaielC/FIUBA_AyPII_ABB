@@ -185,10 +185,54 @@ void pruebas_abb_volumen(void){
     abb_destruir(abb);
 }
 
+void pruebas_iterar_basicas(void){
+
+    abb_t* abb = abb_crear(strcmp, NULL);
+
+    int datos[15];
+    datos[0] = 0;
+    char* claves[15];
+    crear_array_para_insertar_ordenado(claves, datos, 15, 0);
+    for( int i = 0; i < 15; i++){
+        datos[i] = i;
+        abb_guardar(abb, claves[i], &datos[i]);
+    }
+
+    abb_iter_t* iter = abb_iter_in_crear(abb);
+
+    print_test("Pruebas abb iter externo, no está al final", !abb_iter_in_al_final(iter));
+    print_test("Pruebas abb iter externo, ver actual es correcto", *(int*)abb_iter_in_ver_actual(iter) == datos[0]);
+    print_test("Pruebas abb iter externo, se puede avanzar", abb_iter_in_avanzar(iter));
+
+    bool ok_avanzar = true;
+    bool ok_actual = true;
+    for( int i = 1; i < 15; i++ ){
+        char* clave_actual = (char*)abb_iter_in_ver_actual(iter);
+        for(int j = 1; j < 15; j++){
+            if(!strcmp(clave_actual, claves[j]))
+                ok_actual &= (*(int*)abb_obtener(abb, clave_actual) == datos[j]);
+        }
+        ok_avanzar &= abb_iter_in_avanzar(iter);
+    }
+    print_test("Pruebas abb iter externo, ver actual para varios elementos es correcto", ok_actual);
+    print_test("Pruebas abb iter externo, se puede avanzar varias veces", ok_avanzar);
+    print_test("Pruebas abb iter externo, está al final", abb_iter_in_al_final(iter));
+    print_test("Pruebas abb iter externo, no se puede avanzar", !abb_iter_in_avanzar(iter));
+
+    abb_iter_in_destruir(iter);
+
+    abb_destruir(abb);
+    for( int i = 0; i < 15; i++){
+        free(claves[i]);
+    }
+}
+
 void pruebas_abb_alumno(void){
 	pruebas_crear_abb_vacio();
 	pruebas_abb_instertar();
     pruebas_abb_reemplazar();
     pruebas_abb_reemplazar_destruir();
     pruebas_abb_volumen();
+
+    pruebas_iterar_basicas();
 }
