@@ -54,10 +54,7 @@ bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 		nodo_guardar->clave = NULL;
 		nodo_guardar->der = NULL;
 		nodo_guardar->izq = NULL;
-		nodo_guardar->dato = NULL;
-
 		nodo_guardar->clave = strdup(clave_guardar);
-
 		if( !nodo_guardar->clave ){
 			free(nodo);
 			return false;
@@ -86,7 +83,6 @@ void* abb_destruir_nodo( abb_nodo_t* nodo ){
 	if(!nodo) return NULL;
 	void* dato = nodo->dato;
 	free(nodo->clave);
-	
 	free(nodo);
 	return dato;
 }
@@ -178,6 +174,8 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 		char* clave_reemplazante = strdup(reemplazante->clave);
 		dato = (*nodo_borrar)->dato;
 		(*nodo_borrar)->dato = abb_borrar( arbol, clave_reemplazante);
+		arbol->cantidad++; //Compensación por entrar a borrar al reemplazante
+		free((*nodo_borrar)->clave);
 		(*nodo_borrar)->clave = clave_reemplazante;
 	}
 	arbol->cantidad--;
