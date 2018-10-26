@@ -73,6 +73,9 @@ bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 	int comparacion_claves = arbol->comparar_clave( clave_guardar, (*nodo)->clave);
 
 	if(comparacion_claves==0){
+		if(arbol->destruir_dato){
+			arbol->destruir_dato((*nodo)->dato);
+		}
 		(*nodo)->dato = dato;
 		return true;
 	}
