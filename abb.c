@@ -26,7 +26,9 @@ typedef struct abb_iter{
 	abb_t* arbol;
 	pila_t* pila;
 }abb_iter_t;
+
 /* ------------- FUNCIONES AUXILIARES ------------- */
+
 
 abb_nodo_t** abb_nodo_buscar(abb_t* abb, const char* clave_buscada, abb_nodo_t** nodo_actual){
 	if(!*nodo_actual) return nodo_actual;
@@ -42,25 +44,29 @@ abb_nodo_t** abb_nodo_buscar(abb_t* abb, const char* clave_buscada, abb_nodo_t**
 		return abb_nodo_buscar(abb,clave_buscada, &(*nodo_actual)->izq);
 }
 
+abb_nodo_t* abb_nodo_crear( const char* clave, void* dato ){
+	abb_nodo_t* nodo = malloc(sizeof(abb_nodo_t));
+	if( !nodo ) return NULL;
+	
+	nodo->der = NULL;
+	nodo->izq = NULL;
+	nodo->dato = dato;
+	nodo->clave = strdup(clave);
+	if( !nodo->clave ){
+		free(nodo);
+		return NULL;
+	}
+
+	return nodo;
+}
 
 bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 	
 	abb_nodo_t** nodo = abb_nodo_buscar(arbol, clave_guardar, &arbol->raiz);
 
 	if(!*nodo){
-		abb_nodo_t* nodo_guardar = malloc(sizeof(abb_nodo_t));
-		if( !nodo ) return false;
-		
-		nodo_guardar->clave = NULL;
-		nodo_guardar->der = NULL;
-		nodo_guardar->izq = NULL;
-		nodo_guardar->clave = strdup(clave_guardar);
-		if( !nodo_guardar->clave ){
-			free(nodo);
-			return false;
-		}
+		abb_nodo_t* nodo_guardar = abb_nodo_crear( clave_guardar, dato);
 
-		nodo_guardar->dato = dato;
 		*nodo = nodo_guardar;
 
 		arbol->cantidad++;
@@ -79,7 +85,7 @@ bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 	return false;
 }
 
-void* abb_destruir_nodo( abb_nodo_t* nodo ){
+void* abb_nodo_destruir( abb_nodo_t* nodo ){
 	if(!nodo) return NULL;
 	void* dato = nodo->dato;
 	free(nodo->clave);
@@ -93,7 +99,7 @@ void abb_destruir_nodos(abb_nodo_t* nodo_actual,abb_destruir_dato_t destruir_dat
 	abb_destruir_nodos(nodo_actual->izq,destruir_dato);
 	abb_destruir_nodos(nodo_actual->der,destruir_dato);
 
-	void* dato = abb_destruir_nodo(nodo_actual);
+	void* dato = abb_nodo_destruir(nodo_actual);
 	if( destruir_dato )
 		destruir_dato( dato );
 }
@@ -156,7 +162,7 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 	size_t cant_hijos = nodo_cant_hijos( *nodo_borrar );
 	void* dato = NULL;
 	if(cant_hijos == 0){
-		dato = abb_destruir_nodo( *nodo_borrar );
+		dato = abb_nodo_destruir( *nodo_borrar );
 		*nodo_borrar = NULL;
 	}
 	else if(cant_hijos == 1){
@@ -166,7 +172,7 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 		else 
 			reemplazante = (*nodo_borrar)->izq;
 
-		dato = abb_destruir_nodo(*nodo_borrar);
+		dato = abb_nodo_destruir(*nodo_borrar);
 		*nodo_borrar = reemplazante;
 	}
 	else{

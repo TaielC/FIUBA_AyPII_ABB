@@ -101,7 +101,6 @@ bool pila_redimensionar(pila_t* pila,size_t cap_nueva){
 	if(datos_nuevo==NULL){
 		return false;
 	}
-	printf("Pila redimensionada a %d\n",(int)cap_nueva);
 	pila->datos=datos_nuevo;
 	pila->capacidad=cap_nueva;
 

@@ -6,7 +6,6 @@
 #include "testing.h"
 #include "abb.h"
 
-
 #define GRAN_VOL 10000
 #define LARGO_CLAVE 10
 #define FIN_STRING '\0'
@@ -31,7 +30,6 @@ void crear_array_para_insertar_ordenado(char** claves, int* index, int maximo, i
 
 }
 
-
 void pruebas_crear_abb_vacio(void){
 	abb_t* arbol = abb_crear(strcmp, NULL);
 
@@ -54,7 +52,7 @@ void pruebas_abb_instertar(void){
 	int dato2 = 2048;
 	long dato3 = 49102321;
 
-	  print_test("Prueba abb insertar clave1, con dato1", abb_guardar(arbol, clave1, dato1));
+	print_test("Prueba abb insertar clave1, con dato1", abb_guardar(arbol, clave1, dato1));
     print_test("Prueba abb la cantidad de elementos es 1", abb_cantidad(arbol) == 1);
     print_test("Prueba abb obtener clave1 es dato1", !strcmp(abb_obtener(arbol, clave1), dato1));
     print_test("Prueba abb obtener clave1 es dato1", !strcmp(abb_obtener(arbol, clave1), dato1));
@@ -64,7 +62,7 @@ void pruebas_abb_instertar(void){
     print_test("Prueba abb insertar clave3, con dato3", abb_guardar(arbol, clave3, &dato3));
     print_test("Prueba abb cantidad de elementos es 3", abb_cantidad(arbol) == 3);
     print_test("Prueba abb obtener clave3 es dato3", abb_obtener(arbol, clave3) == &dato3);
- 	  print_test("Prueba abb obtener clave2 es dato2", abb_obtener(arbol, clave3) == &dato3);
+ 	print_test("Prueba abb obtener clave2 es dato2", abb_obtener(arbol, clave3) == &dato3);
     print_test("Prueba abb clave2 pertenece", abb_pertenece(arbol, clave2));
     print_test("Prueba abb clave3 pertenece", abb_pertenece(arbol, clave3));
     print_test("Prueba abb borrar clave2, es dato2", abb_borrar(arbol, clave2) == &dato2);
@@ -252,6 +250,89 @@ void pruebas_abb_iterar_volumen(int cantidad){
 	abb_destruir(abb);
 }
 
+
+void pruebas_abb_volumen(void){
+
+    char* claves[GRAN_VOL];
+    int posicion = 0;
+    crear_array_para_insertar_ordenado(claves, &posicion, GRAN_VOL, 0);
+    bool ok_guardar = true;
+
+    abb_t* abb = abb_crear(strcmp, free);
+    for(posicion = 0; posicion < GRAN_VOL ; posicion++ ){
+        ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
+    }
+    print_test("Pruebas abb volumen, insertar muchos elementos", ok_guardar );
+
+    bool ok_borrar = true;
+    bool ok_pertenece = false;
+    for(posicion = 13; posicion < GRAN_VOL ; posicion+=7){
+        ok_borrar &= (abb_borrar(abb, claves[posicion])==claves[posicion]);
+        ok_pertenece |= abb_pertenece(abb, claves[posicion]);
+    }
+    print_test("Pruebas abb volumen, borrar elementos al azar", ok_borrar );
+    print_test("Pruebas abb volumen, claves borradas no pertenecen", !ok_pertenece );
+
+    ok_pertenece = true;
+    bool ok_obtener = true;
+    for(posicion = 17; posicion+1 < GRAN_VOL; posicion += 7){
+        ok_pertenece &= abb_pertenece(abb, claves[posicion]);
+        ok_obtener &= (abb_obtener(abb, claves[posicion+1]) == claves[posicion+1]);
+    }
+    print_test("Pruebas abb volumen, pertenecen claves no borradas", ok_pertenece );
+    print_test("Pruebas abb volumen, obtener claves datos correctos", ok_obtener);
+
+    for(posicion = 13; posicion < GRAN_VOL; posicion += 7){
+        ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
+    }
+    print_test("Pruebas abb volumen, guardar elementos borrados", ok_guardar);
+
+    abb_destruir(abb);
+}
+
+void pruebas_iterar_basicas(void){
+
+    abb_t* abb = abb_crear(strcmp, NULL);
+
+    int datos[15];
+    datos[0] = 0;
+    char* claves[15];
+    crear_array_para_insertar_ordenado(claves, datos, 15, 0);
+    for( int i = 0; i < 15; i++){
+        datos[i] = i;
+        abb_guardar(abb, claves[i], &datos[i]);
+    }
+
+    abb_iter_t* iter = abb_iter_in_crear(abb);
+
+    print_test("Pruebas abb iter externo, no está al final", !abb_iter_in_al_final(iter));
+    print_test("Pruebas abb iter externo, ver actual es correcto", *(int*)abb_iter_in_ver_actual(iter) == datos[0]);
+    print_test("Pruebas abb iter externo, se puede avanzar", abb_iter_in_avanzar(iter));
+
+    bool ok_avanzar = true;
+    bool ok_actual = true;
+    for( int i = 1; i < 15; i++ ){
+        char* clave_actual = (char*)abb_iter_in_ver_actual(iter);
+        for(int j = 1; j < 15; j++){
+            if(!strcmp(clave_actual, claves[j]))
+                ok_actual &= (*(int*)abb_obtener(abb, clave_actual) == datos[j]);
+        }
+        ok_avanzar &= abb_iter_in_avanzar(iter);
+    }
+    print_test("Pruebas abb iter externo, ver actual para varios elementos es correcto", ok_actual);
+    print_test("Pruebas abb iter externo, se puede avanzar varias veces", ok_avanzar);
+    print_test("Pruebas abb iter externo, está al final", abb_iter_in_al_final(iter));
+    print_test("Pruebas abb iter externo, no se puede avanzar", !abb_iter_in_avanzar(iter));
+
+    abb_iter_in_destruir(iter);
+
+    abb_destruir(abb);
+    for( int i = 0; i < 15; i++){
+        free(claves[i]);
+    }
+
+}
+
 void pruebas_abb_alumno(void){
 	pruebas_crear_abb_vacio();
 	pruebas_abb_instertar();
@@ -261,4 +342,6 @@ void pruebas_abb_alumno(void){
 	pruebas_abb_iter_interno(50);
 	pruebas_abb_iterar_vacio();
 	pruebas_abb_iterar_volumen(500);
+    pruebas_abb_volumen();
+    pruebas_iterar_basicas();
 }
