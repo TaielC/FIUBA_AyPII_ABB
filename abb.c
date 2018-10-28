@@ -217,14 +217,17 @@ void *abb_obtener(const abb_t *arbol, const char *clave){
 /* =========== PIMITIVA DEL ITER INTERNO =========== */
 
 
-void _abb_in_order(abb_nodo_t* nodo,bool visitar(const char *, void *, void *),void* extra){
-	if(!nodo) return;
+bool _abb_in_order(abb_nodo_t* nodo,bool visitar(const char *, void *, void *),void* extra){
+	if(!nodo) return true;
 
-	_abb_in_order(nodo->izq,visitar,extra);
-
-	if(visitar(nodo->clave,nodo->dato,extra)){
-		_abb_in_order(nodo->der,visitar,extra);
+	if(!_abb_in_order(nodo->izq,visitar,extra))
+		return false;
+	if(!visitar(nodo->clave,nodo->dato,extra)){
+		return false;
 	}
+	if(!_abb_in_order(nodo->der,visitar,extra))
+		return false;
+	return true;
 }
 
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
