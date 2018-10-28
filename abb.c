@@ -238,12 +238,14 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
 	if(!iterador) return NULL;
 
 	iterador->pila = pila_crear();
+
 	if(!iterador->pila){
 		free(iterador);
 		return NULL;
 	}
 
 	iterador->arbol = (abb_t*) arbol;
+
 	abb_apilar_izquierdos(iterador->pila,arbol->raiz);
 
 	return iterador;
@@ -253,12 +255,16 @@ bool abb_iter_in_avanzar(abb_iter_t *iter){
 	if(pila_esta_vacia(iter->pila)) return false;
 
 	abb_nodo_t* desapilado = pila_desapilar(iter->pila);
+
 	abb_apilar_izquierdos(iter->pila,desapilado->der);
 	return true;
 }
 
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
-	return pila_ver_tope(iter->pila);
+	abb_nodo_t* tope = pila_ver_tope(iter->pila);
+	if(!tope) return NULL;
+
+	return tope->clave;
 }
 
 bool abb_iter_in_al_final(const abb_iter_t *iter){

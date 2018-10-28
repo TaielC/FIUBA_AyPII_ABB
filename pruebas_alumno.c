@@ -306,7 +306,7 @@ void pruebas_iterar_basicas(void){
     abb_iter_t* iter = abb_iter_in_crear(abb);
 
     print_test("Pruebas abb iter externo, no está al final", !abb_iter_in_al_final(iter));
-    print_test("Pruebas abb iter externo, ver actual es correcto", *(int*)abb_iter_in_ver_actual(iter) == datos[0]);
+    print_test("Pruebas abb iter externo, ver actual es correcto",strcmp(abb_iter_in_ver_actual(iter),"0000")==0);
     print_test("Pruebas abb iter externo, se puede avanzar", abb_iter_in_avanzar(iter));
 
     bool ok_avanzar = true;
