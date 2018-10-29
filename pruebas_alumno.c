@@ -6,7 +6,6 @@
 #include "testing.h"
 #include "abb.h"
 
-#define GRAN_VOL 10000
 #define LARGO_CLAVE 10
 #define FIN_STRING '\0'
 
@@ -251,23 +250,23 @@ void pruebas_abb_iterar_volumen(int cantidad){
 }
 
 
-void pruebas_abb_volumen(void){
+void pruebas_abb_volumen(int volumen){
 
-    char* claves[GRAN_VOL];
+    char** claves = malloc(sizeof(char*)*volumen);
     int posicion = 0;
-    crear_array_para_insertar_ordenado(claves, &posicion, GRAN_VOL, 0);
+    crear_array_para_insertar_ordenado(claves, &posicion, volumen, 0);
     bool ok_guardar = true;
-
+    
     abb_t* abb = abb_crear(strcmp, free);
-    for(posicion = 0; posicion < GRAN_VOL ; posicion++ ){
+    for(posicion = 0; posicion < volumen ; posicion++ ){
         ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
     }
     print_test("Pruebas abb volumen, insertar muchos elementos", ok_guardar );
 
     bool ok_borrar = true;
     bool ok_pertenece = false;
-    for(posicion = 13; posicion < GRAN_VOL ; posicion+=7){
-        ok_borrar &= (abb_borrar(abb, claves[posicion])==claves[posicion]);
+    for(posicion = 13; posicion < volumen ; posicion+=7){
+        ok_borrar &= (!strcmp(abb_borrar(abb, claves[posicion]),claves[posicion]));
         ok_pertenece |= abb_pertenece(abb, claves[posicion]);
     }
     print_test("Pruebas abb volumen, borrar elementos al azar", ok_borrar );
@@ -275,14 +274,14 @@ void pruebas_abb_volumen(void){
 
     ok_pertenece = true;
     bool ok_obtener = true;
-    for(posicion = 17; posicion+1 < GRAN_VOL; posicion += 7){
+    for(posicion = 17; posicion+1 < volumen; posicion += 7){
         ok_pertenece &= abb_pertenece(abb, claves[posicion]);
-        ok_obtener &= (abb_obtener(abb, claves[posicion+1]) == claves[posicion+1]);
+        ok_obtener &= (!strcmp(abb_obtener(abb, claves[posicion+1]), claves[posicion+1]));
     }
     print_test("Pruebas abb volumen, pertenecen claves no borradas", ok_pertenece );
     print_test("Pruebas abb volumen, obtener claves datos correctos", ok_obtener);
 
-    for(posicion = 13; posicion < GRAN_VOL; posicion += 7){
+    for(posicion = 13; posicion < volumen; posicion += 7){
         ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
     }
     print_test("Pruebas abb volumen, guardar elementos borrados", ok_guardar);
@@ -342,6 +341,6 @@ void pruebas_abb_alumno(void){
 	pruebas_abb_iter_interno(50);
 	pruebas_abb_iterar_vacio();
 	pruebas_abb_iterar_volumen(500);
-    pruebas_abb_volumen();
+    pruebas_abb_volumen(100);
     pruebas_iterar_basicas();
 }

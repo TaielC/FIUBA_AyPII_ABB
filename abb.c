@@ -116,15 +116,15 @@ size_t nodo_cant_hijos(abb_nodo_t* nodo){
 	return cant_hijos;
 }
 
-abb_nodo_t* abb_buscar_reemplazante( abb_t* arbol, abb_nodo_t* nodo_actual){
-	if(!nodo_actual) return NULL;
-	if(!nodo_actual->der) return NULL;
-	nodo_actual = nodo_actual->der;
+abb_nodo_t** nodo_buscar_reemplazante( abb_nodo_t* nodo){
+	if(!nodo) return NULL;
+	if(!nodo->der) return NULL;
+	abb_nodo_t** reemplazante = &nodo->der;
 
-	while(nodo_actual->izq)
-		nodo_actual = nodo_actual->izq;
+	while((*reemplazante)->izq)
+		*reemplazante = (*reemplazante)->izq;
 
-	return nodo_actual;
+	return reemplazante;
 }
 
 void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
@@ -154,11 +154,8 @@ bool abb_guardar(abb_t *arbol, const char *clave, void *dato){
 
 }
 
-void* abb_borrar(abb_t* arbol, const char* clave){
-
-	abb_nodo_t** nodo_borrar = abb_nodo_buscar(arbol, clave, &arbol->raiz);
-	if(!*nodo_borrar) return NULL;
-
+void* _abb_borrar( abb_nodo_t** nodo_borrar, const char* clave ){
+	
 	size_t cant_hijos = nodo_cant_hijos( *nodo_borrar );
 	void* dato = NULL;
 	if(cant_hijos == 0){
@@ -176,16 +173,21 @@ void* abb_borrar(abb_t* arbol, const char* clave){
 		*nodo_borrar = reemplazante;
 	}
 	else{
-		abb_nodo_t* reemplazante = abb_buscar_reemplazante( arbol, *nodo_borrar);
-		char* clave_reemplazante = strdup(reemplazante->clave);
+		abb_nodo_t** reemplazante = nodo_buscar_reemplazante(*nodo_borrar);
+		char* clave_reemplazante = strdup((*reemplazante)->clave);
 		dato = (*nodo_borrar)->dato;
-		(*nodo_borrar)->dato = abb_borrar( arbol, clave_reemplazante);
-		arbol->cantidad++; //Compensación por entrar a borrar al reemplazante
+		(*nodo_borrar)->dato = _abb_borrar( reemplazante, clave_reemplazante);
 		free((*nodo_borrar)->clave);
 		(*nodo_borrar)->clave = clave_reemplazante;
 	}
-	arbol->cantidad--;
 	return dato;
+}
+
+void* abb_borrar(abb_t* arbol, const char* clave){
+	abb_nodo_t** nodo_borrar = abb_nodo_buscar(arbol, clave, &arbol->raiz);
+	if(!*nodo_borrar) return NULL;
+	arbol->cantidad--;
+	return _abb_borrar( nodo_borrar, clave);
 }
 
 size_t abb_cantidad(abb_t* arbol){
