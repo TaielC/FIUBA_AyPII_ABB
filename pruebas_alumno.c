@@ -287,6 +287,7 @@ void pruebas_abb_volumen(int volumen){
     print_test("Pruebas abb volumen, guardar elementos borrados", ok_guardar);
 
     abb_destruir(abb);
+    free(claves);
 }
 
 void pruebas_iterar_basicas(void){

@@ -122,7 +122,7 @@ abb_nodo_t** nodo_buscar_reemplazante( abb_nodo_t* nodo){
 	abb_nodo_t** reemplazante = &nodo->der;
 
 	while((*reemplazante)->izq)
-		*reemplazante = (*reemplazante)->izq;
+			reemplazante = &(*reemplazante)->izq;
 
 	return reemplazante;
 }
