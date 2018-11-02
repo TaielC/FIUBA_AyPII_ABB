@@ -8,7 +8,7 @@
 
 typedef struct abb abb_t;
 
-typedef int (*abb_comparar_clave_t) (const char *, const char *);
+typedef int (*abb_comparar_clave_t) (const void *, const void *);
 typedef void (*abb_destruir_dato_t) (void *);
 
 typedef struct abb_iter abb_iter_t;
@@ -31,7 +31,7 @@ Pre: El arbol fue creado.
 Post:Se guardo la clave y su dato asociado en el arbol. Devuelve
 true si el guardado fue exitoso, false en caso contrario.
 */
-bool abb_guardar(abb_t *arbol, const char *clave, void *dato);
+bool abb_guardar(abb_t *arbol, const void *clave, void *dato);
 
 /*
 Pre:El arbol fue creado.
@@ -40,21 +40,21 @@ fueron removidos del arbol.
 Devuelve el dato borrado en caso de que este haya estado 
 en el arbol, o NULL en caso contrario.
 */
-void *abb_borrar(abb_t *arbol, const char *clave);
+void *abb_borrar(abb_t *arbol, const void *clave);
 
 /*
 Pre:El arbol fue creado
 Post: Se devolvio el valor asociado a la clave, en caso de que
 este haya estado en el arbol, o NULL en caso contrario.
 */
-void *abb_obtener(const abb_t *arbol, const char *clave);
+void *abb_obtener(const abb_t *arbol, const void *clave);
 
 /*
 Pre: El arbol fue creado
 Post: Se devolvio true si la clave estaba en el arbol, o false en caso
 contrario.
 */
-bool abb_pertenece(const abb_t *arbol, const char *clave);
+bool abb_pertenece(const abb_t *arbol, const void *clave);
 
 /*
 Pre: El arbol fue creado
@@ -79,7 +79,7 @@ verdadero en caso de que se quiera seguir iterando, y false en caso contrario.
 Post: Se realizo un recorrido in-order del arbol siempre que la funcion visitar devolvio
 true, aplicandosele esta a cada uno de los elementos del arbol en el orden mencionado.
 */
-void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra);
+void abb_in_order(abb_t *arbol, bool visitar(const void *, void *, void *), void *extra);
 
 
 /* -------- Primitivas del iterador externo del ABB -------- */
@@ -102,7 +102,7 @@ Pre: El iterador fue creado
 Post: Devuelve el dato asociado a la clave sobre la cual se encuentra el iterador en este momento, o
 NULL si el iterador se encuentra al final.
 */
-const char *abb_iter_in_ver_actual(const abb_iter_t *iter);
+const void *abb_iter_in_ver_actual(const abb_iter_t *iter);
 
 /*
 Pre: El iterador fue creado
