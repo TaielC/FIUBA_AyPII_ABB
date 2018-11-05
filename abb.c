@@ -64,25 +64,20 @@ bool abb_nodo_insertar(abb_t* arbol, const char* clave_guardar, void* dato){
 	
 	abb_nodo_t** nodo = abb_nodo_buscar(arbol, clave_guardar, &arbol->raiz);
 
-	if(!*nodo){
-		abb_nodo_t* nodo_guardar = abb_nodo_crear( clave_guardar, dato);
-
-		*nodo = nodo_guardar;
-
-		arbol->cantidad++;
-		return true;
-	}
-
-	int comparacion_claves = arbol->comparar_clave( clave_guardar, (*nodo)->clave);
-
-	if(comparacion_claves==0){
+	if(*nodo){
 		if(arbol->destruir_dato){
 			arbol->destruir_dato((*nodo)->dato);
 		}
 		(*nodo)->dato = dato;
 		return true;
 	}
-	return false;
+
+	abb_nodo_t* nodo_guardar = abb_nodo_crear( clave_guardar, dato);
+	if(!nodo_guardar) return false;
+
+	*nodo = nodo_guardar;
+	arbol->cantidad++;
+	return true;
 }
 
 void* abb_nodo_destruir( abb_nodo_t* nodo ){
