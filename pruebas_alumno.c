@@ -34,7 +34,7 @@ void crear_array_para_insertar_ordenado(char** claves, int* index, int maximo, i
 }
 
 void pruebas_crear_abb_vacio(void){
-	abb_t* arbol = abb_crear(strcmp_wrapper, NULL);
+	abb_t* arbol = abb_crear(strcmp_wrapper, NULL, 0);
 
     print_test("Prueba abb crear abb vacio", arbol);
     print_test("Prueba abb la cantidad de elementos es 0", abb_cantidad(arbol) == 0);
@@ -47,7 +47,7 @@ void pruebas_crear_abb_vacio(void){
 
 void pruebas_abb_instertar(void){
 
-	abb_t* arbol = abb_crear(strcmp_wrapper, NULL);
+	abb_t* arbol = abb_crear(strcmp_wrapper, NULL, 0);
 
 	char* clave1 = "0050", *clave2 = "0025", *clave3 = "0100",
 	*clave4 = "0000", *clave5 = "0035", *clave6 = "0075", *clave7 = "0125";
@@ -97,7 +97,7 @@ void pruebas_abb_instertar(void){
 }
 
 void pruebas_abb_reemplazar(){
-	abb_t* abb = abb_crear(strcmp_wrapper,NULL);
+	abb_t* abb = abb_crear(strcmp_wrapper,NULL, 0);
 
 	char *clave1 = "animalito", *valor1a = "perrito",*valor1b = "gatito";
 	char *clave2 = "periferico", *valor2a = "mouse",*valor2b = "teclado";
@@ -121,7 +121,7 @@ void pruebas_abb_reemplazar(){
 }
 
 void pruebas_abb_reemplazar_destruir(){
-	abb_t* abb = abb_crear(strcmp_wrapper,free);
+	abb_t* abb = abb_crear(strcmp_wrapper,free, 0);
 
 	char *clave1 = "animalito", *valor1a,*valor1b;
 	char *clave2 = "periferico", *valor2a,*valor2b;
@@ -150,7 +150,7 @@ void pruebas_abb_reemplazar_destruir(){
 }
 
 void pruebas_abb_clave_vacia(){
-	abb_t* abb = abb_crear(strcmp_wrapper,NULL);
+	abb_t* abb = abb_crear(strcmp_wrapper,NULL, 0);
 	char *clave = "", *valor = "";
 
 	print_test("Prueba abb insertar clave vacia",abb_guardar(abb,clave,valor));
@@ -172,7 +172,7 @@ bool comprobar_in_order(const void* clave,void* valor,void* extra){
 }
 
 void pruebas_abb_iter_interno(size_t cantidad_iterar){
-	abb_t* abb = abb_crear(strcmp_wrapper,NULL);
+	abb_t* abb = abb_crear(strcmp_wrapper,NULL, 0);
 
 	int arreglo[cantidad_iterar];
 
@@ -200,7 +200,7 @@ void pruebas_abb_iter_interno(size_t cantidad_iterar){
 }
 
 void pruebas_abb_iterar_vacio(){
-	abb_t* abb = abb_crear(strcmp_wrapper,NULL);
+	abb_t* abb = abb_crear(strcmp_wrapper,NULL, 0);
 	abb_iter_t* iterador = abb_iter_in_crear(abb);
 
 	print_test("Prueba abb crear iterador sobre arbol vacio",iterador);
@@ -212,8 +212,12 @@ void pruebas_abb_iterar_vacio(){
 	abb_destruir(abb);
 }
 
+int strncmp_wrapper(const void* str1, const void* str2){
+    return strncmp((char*)str1, (char*)str2, 4);
+}
+
 void pruebas_abb_iterar_volumen(int cantidad){
-	abb_t* abb = abb_crear(strcmp_wrapper,NULL);
+	abb_t* abb = abb_crear(strncmp_wrapper,NULL, 5);
 
 	char* claves[cantidad];
 
@@ -261,7 +265,7 @@ void pruebas_abb_volumen(int volumen){
     crear_array_para_insertar_ordenado(claves, &posicion, volumen, 0);
     bool ok_guardar = true;
     
-    abb_t* abb = abb_crear(strcmp_wrapper, free);
+    abb_t* abb = abb_crear(strcmp_wrapper, free, 0);
     for(posicion = 0; posicion < volumen ; posicion++ ){
         ok_guardar &= abb_guardar(abb, claves[posicion], claves[posicion]);
     }
@@ -296,7 +300,7 @@ void pruebas_abb_volumen(int volumen){
 
 void pruebas_iterar_basicas(void){
 
-    abb_t* abb = abb_crear(strcmp_wrapper, NULL);
+    abb_t* abb = abb_crear(strcmp_wrapper, NULL, 0);
 
     int datos[15];
     datos[0] = 0;

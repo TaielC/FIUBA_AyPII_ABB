@@ -20,11 +20,13 @@ typedef struct abb_iter abb_iter_t;
 Crea el arbol
 Pre:cmp es una funcion es una funcion que recibe dos cadenas y devuelve:
 Un entero menor que 0 si la primera es menor que la segunda, un entero mayor que 0 
-si la primera es mayor que la segunda, o 0 si ambas son iguales. 
+si la primera es mayor que la segunda, o 0 si ambas son iguales. Además recibe un tamaño,
+en bytes, de las claves a utilizar (se sugiere dar un byte de más para evitar errores),
+si estas son strings de longitud variable se puede asignar a 0.
 Destruir dato es una funcion capaz de destruir los datos almacenados en el abb, o NULL.
 Post:El abb fue creado.
 */
-abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato);
+abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato, int tamanio);
 
 /*
 Pre: El arbol fue creado.

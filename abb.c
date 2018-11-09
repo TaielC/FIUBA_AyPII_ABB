@@ -20,6 +20,7 @@ typedef struct abb{
 	abb_comparar_clave_t comparar_clave;
 	abb_destruir_dato_t destruir_dato;
 	int cantidad;
+	int tam_clave;
 }abb_t;
 
 typedef struct abb_iter{
@@ -29,6 +30,12 @@ typedef struct abb_iter{
 
 /* ------------- FUNCIONES AUXILIARES ------------- */
 
+char* abb_nodo_clave_copiar(const char* clave, int tam_clave){
+	if(tam_clave == 0)
+		return strdup(clave);
+	else
+		return memcpy(malloc(tam_clave), clave, tam_clave);
+}
 
 abb_nodo_t** abb_nodo_buscar(abb_t* abb, const void* clave_buscada, abb_nodo_t** nodo_actual){
 	if(!*nodo_actual) return nodo_actual;
@@ -44,14 +51,15 @@ abb_nodo_t** abb_nodo_buscar(abb_t* abb, const void* clave_buscada, abb_nodo_t**
 		return abb_nodo_buscar(abb,clave_buscada, &(*nodo_actual)->izq);
 }
 
-abb_nodo_t* abb_nodo_crear( const void* clave, void* dato ){
+abb_nodo_t* abb_nodo_crear( abb_t* abb, const void* clave, void* dato ){
 	abb_nodo_t* nodo = malloc(sizeof(abb_nodo_t));
 	if( !nodo ) return NULL;
 	
 	nodo->der = NULL;
 	nodo->izq = NULL;
 	nodo->dato = dato;
-	nodo->clave = strdup(clave);
+	nodo->clave = abb_nodo_clave_copiar(clave, abb->tam_clave);
+	
 	if( !nodo->clave ){
 		free(nodo);
 		return NULL;
@@ -72,7 +80,7 @@ bool abb_nodo_insertar(abb_t* arbol, const void* clave_guardar, void* dato){
 		return true;
 	}
 
-	abb_nodo_t* nodo_guardar = abb_nodo_crear( clave_guardar, dato);
+	abb_nodo_t* nodo_guardar = abb_nodo_crear(arbol, clave_guardar, dato);
 	if(!nodo_guardar) return false;
 
 	*nodo = nodo_guardar;
@@ -131,7 +139,7 @@ void abb_apilar_izquierdos(pila_t* pila,abb_nodo_t* nodo){
 
 /* ============== PRIMITIVAS DE ABB ============== */
 
-abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
+abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato, int tam_clave){
 
 	abb_t* arbol = malloc(sizeof(abb_t));
 	if(!arbol) return NULL;
@@ -140,6 +148,7 @@ abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato){
 	arbol->destruir_dato = destruir_dato;
 	arbol->comparar_clave = cmp;
 	arbol->cantidad = 0;
+	arbol->tam_clave = tam_clave;
 
 	return arbol;
 }
@@ -149,7 +158,7 @@ bool abb_guardar(abb_t *arbol, const void *clave, void *dato){
 
 }
 
-void* _abb_borrar( abb_nodo_t** nodo_borrar, const void* clave ){
+void* _abb_borrar(abb_t* abb, abb_nodo_t** nodo_borrar, const void* clave ){
 	
 	size_t cant_hijos = nodo_cant_hijos( *nodo_borrar );
 	void* dato = NULL;
@@ -169,9 +178,9 @@ void* _abb_borrar( abb_nodo_t** nodo_borrar, const void* clave ){
 	}
 	else{
 		abb_nodo_t** reemplazante = nodo_buscar_reemplazante(*nodo_borrar);
-		char* clave_reemplazante = strdup((*reemplazante)->clave);
+		char* clave_reemplazante = abb_nodo_clave_copiar((*reemplazante)->clave, abb->tam_clave);
 		dato = (*nodo_borrar)->dato;
-		(*nodo_borrar)->dato = _abb_borrar( reemplazante, clave_reemplazante);
+		(*nodo_borrar)->dato = _abb_borrar(abb, reemplazante, clave_reemplazante);
 		free((*nodo_borrar)->clave);
 		(*nodo_borrar)->clave = clave_reemplazante;
 	}
@@ -182,7 +191,7 @@ void* abb_borrar(abb_t* arbol, const void* clave){
 	abb_nodo_t** nodo_borrar = abb_nodo_buscar(arbol, clave, &arbol->raiz);
 	if(!*nodo_borrar) return NULL;
 	arbol->cantidad--;
-	return _abb_borrar( nodo_borrar, clave);
+	return _abb_borrar(arbol, nodo_borrar, clave);
 }
 
 size_t abb_cantidad(abb_t* arbol){
