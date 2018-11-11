@@ -101,7 +101,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter);
 
 /*
 Pre: El iterador fue creado
-Post: Devuelve el dato asociado a la clave sobre la cual se encuentra el iterador en este momento, o
+Post: Devuelve la clave sobre la cual se encuentra el iterador en este momento, o
 NULL si el iterador se encuentra al final.
 */
 const void *abb_iter_in_ver_actual(const abb_iter_t *iter);
