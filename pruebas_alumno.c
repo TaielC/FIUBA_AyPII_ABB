@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "testing.h"
 #include "abb.h"
@@ -341,8 +342,63 @@ void pruebas_iterar_basicas(void){
 
 }
 
+int difftime_wrappeado(const void* tiempo1, const void* tiempo2){
+    double diferencia = difftime( *(time_t*)tiempo1,*(time_t*)tiempo2);
+
+    if(diferencia < 0){
+        return -1;
+    }else if(diferencia > 0){
+        return 1;
+    }
+    return 0;
+}
+
+void pruebas_iterar_desde(void){
+    struct tm fecha1_tm = {0};
+    struct tm fecha2_tm = {0};
+    struct tm fecha3_tm = {0};
+    struct tm fecha4_tm = {0};
+    struct tm fecha5_tm = {0};
+    struct tm fecha6_tm = {0};
+
+    fecha1_tm.tm_year = 100;
+    fecha2_tm.tm_year = 50;
+    fecha3_tm.tm_year = 150;
+    fecha4_tm.tm_year = 75;
+    fecha5_tm.tm_year = 125;
+    fecha6_tm.tm_year = 40;
+
+    time_t fecha1 = mktime(&fecha1_tm);
+    time_t fecha2 = mktime(&fecha2_tm);
+    time_t fecha3 = mktime(&fecha3_tm);
+    time_t fecha4 = mktime(&fecha4_tm);
+    time_t fecha5 = mktime(&fecha5_tm);
+    time_t fecha6 = mktime(&fecha6_tm);
+
+    abb_t* arbol = abb_crear(difftime_wrappeado,NULL,sizeof(time_t));
+    bool ok = true;
+
+    ok &= abb_guardar(arbol,&fecha1,NULL);
+    ok &= abb_guardar(arbol,&fecha2,NULL);
+    ok &= abb_guardar(arbol,&fecha3,NULL);
+    ok &= abb_guardar(arbol,&fecha4,NULL);
+    ok &= abb_guardar(arbol,&fecha5,NULL);
+
+    print_test("Prcrear_desdeueba abb insertar varios time_t",ok);
+    abb_iter_t* iterador = abb_iter_in_crear_desde(arbol,&fecha6);
+
+    print_test("Prueba abb crear iterador desde un nodo diferente al primero",iterador);
+    print_test("Prueba abb el iterador no esta al final",!abb_iter_in_al_final(iterador));
+    print_test("Prueba abb iter ver actual es el correcto",difftime_wrappeado(abb_iter_in_ver_actual(iterador),&fecha2)==0);
+    print_test("Prueba abb avanzar funciona",abb_iter_in_avanzar(iterador));
+    print_test("Ver actual es el correcto",difftime_wrappeado(abb_iter_in_ver_actual(iterador),&fecha4)==0);
+    abb_iter_in_destruir(iterador);
+    abb_destruir(arbol);
+}
+
+
 void pruebas_abb_alumno(void){
-	pruebas_crear_abb_vacio();
+	/*pruebas_crear_abb_vacio();
 	pruebas_abb_instertar();
 	pruebas_abb_reemplazar();
 	pruebas_abb_reemplazar_destruir();
@@ -351,5 +407,6 @@ void pruebas_abb_alumno(void){
 	pruebas_abb_iterar_vacio();
 	pruebas_abb_iterar_volumen(500);
     pruebas_abb_volumen(100);
-    pruebas_iterar_basicas();
+    pruebas_iterar_basicas();*/
+    pruebas_iterar_desde();
 }

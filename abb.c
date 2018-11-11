@@ -260,6 +260,53 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
 	return iterador;
 }
 
+
+abb_iter_t* abb_iter_in_crear_desde(const abb_t *arbol,void* desde){
+	abb_iter_t* iterador = malloc(sizeof(abb_iter_t));
+	if(!iterador) return NULL;
+	iterador->pila = pila_crear();
+	if(!iterador->pila){
+		free(iterador);
+		return NULL;
+	}
+
+	iterador->arbol = (abb_t*) arbol;
+
+	abb_nodo_t* actual = arbol->raiz;
+	bool encontrado = false;
+	bool anterior_mayor = false;
+	bool primera_iteracion = true;
+
+	do{
+		if(!actual) break;
+
+		if(arbol->comparar_clave(actual->clave,desde) == 0){
+			pila_apilar(iterador->pila,actual);
+			encontrado = true;
+
+		}else if(arbol->comparar_clave(actual->clave,desde) < 0){
+			actual = actual->der;
+
+			if(anterior_mayor && !primera_iteracion && !actual) encontrado = true;
+
+			anterior_mayor = false;
+
+		}else if(arbol->comparar_clave(actual->clave,desde) > 0){
+			pila_apilar(iterador->pila,actual);
+			actual = actual->izq;
+
+			if(!anterior_mayor && !primera_iteracion && !actual) encontrado = true;
+
+			anterior_mayor = true;
+		}
+		primera_iteracion = false;
+		
+	}while(!encontrado);
+
+	return iterador;
+}
+
+
 bool abb_iter_in_avanzar(abb_iter_t *iter){
 	if(pila_esta_vacia(iter->pila)) return false;
 
