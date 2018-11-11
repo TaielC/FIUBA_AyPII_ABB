@@ -261,7 +261,7 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
 }
 
 
-abb_iter_t* crear_desde(const abb_t *arbol,void* desde){
+abb_iter_t* abb_iter_in_crear_desde(const abb_t *arbol,void* desde){
 	abb_iter_t* iterador = malloc(sizeof(abb_iter_t));
 	if(!iterador) return NULL;
 	iterador->pila = pila_crear();

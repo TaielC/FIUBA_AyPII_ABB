@@ -92,6 +92,8 @@ Post: Se devolvio un puntero a iterador.
 */
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol);
 
+abb_iter_t* abb_iter_in_crear_desde(const abb_t *arbol,void* desde);
+
 /*
 Pre: El iterador fue creado
 Post: De ser posible, se avanzo al siguiente elemento en el arbol (Realizando un recorrido in-order).
