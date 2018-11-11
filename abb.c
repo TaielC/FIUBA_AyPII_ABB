@@ -323,6 +323,13 @@ const void *abb_iter_in_ver_actual(const abb_iter_t *iter){
 	return tope->clave;
 }
 
+const void *abb_iter_in_dato_actual(const abb_iter_t *iter){
+	abb_nodo_t* tope = pila_ver_tope(iter->pila);
+	if(!tope) return NULL;
+
+	return tope->dato;
+}
+
 bool abb_iter_in_al_final(const abb_iter_t *iter){
 	return pila_esta_vacia(iter->pila);
 }
