@@ -280,22 +280,22 @@ abb_iter_t* abb_iter_in_crear_desde(const abb_t *arbol,void* desde){
 	do{
 		if(!actual) break;
 
-		if(arbol->comparar_clave(actual,desde) == 0){
+		if(arbol->comparar_clave(actual->clave,desde) == 0){
 			pila_apilar(iterador->pila,actual);
 			encontrado = true;
 
-		}else if(arbol->comparar_clave(actual,desde) < 0){
+		}else if(arbol->comparar_clave(actual->clave,desde) < 0){
 			actual = actual->der;
 
-			if(anterior_mayor && !primera_iteracion) encontrado = true;
+			if(anterior_mayor && !primera_iteracion && !actual) encontrado = true;
 
 			anterior_mayor = false;
 
-		}else if(arbol->comparar_clave(actual,desde) > 0){
+		}else if(arbol->comparar_clave(actual->clave,desde) > 0){
 			pila_apilar(iterador->pila,actual);
 			actual = actual->izq;
 
-			if(!anterior_mayor && !primera_iteracion) encontrado = true;
+			if(!anterior_mayor && !primera_iteracion && !actual) encontrado = true;
 
 			anterior_mayor = true;
 		}

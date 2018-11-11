@@ -359,18 +359,21 @@ void pruebas_iterar_desde(void){
     struct tm fecha3_tm = {0};
     struct tm fecha4_tm = {0};
     struct tm fecha5_tm = {0};
+    struct tm fecha6_tm = {0};
 
     fecha1_tm.tm_year = 100;
     fecha2_tm.tm_year = 50;
     fecha3_tm.tm_year = 150;
     fecha4_tm.tm_year = 75;
     fecha5_tm.tm_year = 125;
+    fecha6_tm.tm_year = 40;
 
     time_t fecha1 = mktime(&fecha1_tm);
     time_t fecha2 = mktime(&fecha2_tm);
     time_t fecha3 = mktime(&fecha3_tm);
     time_t fecha4 = mktime(&fecha4_tm);
     time_t fecha5 = mktime(&fecha5_tm);
+    time_t fecha6 = mktime(&fecha6_tm);
 
     abb_t* arbol = abb_crear(difftime_wrappeado,NULL,sizeof(time_t));
     bool ok = true;
@@ -381,11 +384,15 @@ void pruebas_iterar_desde(void){
     ok &= abb_guardar(arbol,&fecha4,NULL);
     ok &= abb_guardar(arbol,&fecha5,NULL);
 
-    print_test("Prueba abb insertar varios time_t",ok);
-    abb_iter_t* iterador = abb_iter_in_crear_desde(arbol,&fecha4);
+    print_test("Prcrear_desdeueba abb insertar varios time_t",ok);
+    abb_iter_t* iterador = abb_iter_in_crear_desde(arbol,&fecha6);
+
     print_test("Prueba abb crear iterador desde un nodo diferente al primero",iterador);
     print_test("Prueba abb el iterador no esta al final",!abb_iter_in_al_final(iterador));
-    print_test("Prueba abb iter ver actual es el correcto",difftime_wrappeado(abb_iter_in_ver_actual(iterador),&fecha1)==0);
+    print_test("Prueba abb iter ver actual es el correcto",difftime_wrappeado(abb_iter_in_ver_actual(iterador),&fecha2)==0);
+    print_test("Prueba abb avanzar funciona",abb_iter_in_avanzar(iterador));
+    print_test("Ver actual es el correcto",difftime_wrappeado(abb_iter_in_ver_actual(iterador),&fecha4)==0);
+    abb_iter_in_destruir(iterador);
     abb_destruir(arbol);
 }
 
