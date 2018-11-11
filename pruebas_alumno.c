@@ -115,8 +115,8 @@ void pruebas_abb_reemplazar(){
 	print_test("Prueba abb obtener valor clave1 es valor1b",abb_obtener(abb,clave1)==valor1b);
 	print_test("Prueba abb obtener valor clave1 es valor1b",abb_obtener(abb,clave1)==valor1b);
 	print_test("Insertar clave2 con otro valor",abb_guardar(abb,clave2,valor2b));
-	print_test("Prueba abb obtener valor clave2 es valor2a",abb_obtener(abb,clave2)==valor2b);
-	print_test("Prueba abb obtener valor clave2 es valor2a",abb_obtener(abb,clave2)==valor2b);
+	print_test("Prueba abb obtener valor clave2 es valor2b",abb_obtener(abb,clave2)==valor2b);
+	print_test("Prueba abb obtener valor clave2 es valor2b",abb_obtener(abb,clave2)==valor2b);
 	print_test("La cantidad de elementos es 2",abb_cantidad(abb)==2);
 	abb_destruir(abb);
 }
@@ -398,15 +398,15 @@ void pruebas_iterar_desde(void){
 
 
 void pruebas_abb_alumno(void){
-	/*pruebas_crear_abb_vacio();
-	pruebas_abb_instertar();
+	// pruebas_crear_abb_vacio();
+	// pruebas_abb_instertar();
 	pruebas_abb_reemplazar();
 	pruebas_abb_reemplazar_destruir();
-	pruebas_abb_clave_vacia();
-	pruebas_abb_iter_interno(50);
-	pruebas_abb_iterar_vacio();
-	pruebas_abb_iterar_volumen(500);
-    pruebas_abb_volumen(100);
-    pruebas_iterar_basicas();*/
-    pruebas_iterar_desde();
+	// pruebas_abb_clave_vacia();
+	// pruebas_abb_iter_interno(50);
+	// pruebas_abb_iterar_vacio();
+	// pruebas_abb_iterar_volumen(500);
+ //    pruebas_abb_volumen(100);
+ //    pruebas_iterar_basicas();
+ //    pruebas_iterar_desde();
 }

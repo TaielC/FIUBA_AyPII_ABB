@@ -113,7 +113,7 @@ Pre: El iterador fue creado
 Post: Devuelve el dato de la clave sobre la que se encuentra el iterador en
 este momento, o NULL si el iterador se encuentra al final.
 */
-const void *abb_iter_in_dato_actual(const abb_iter_t *iter){
+const void *abb_iter_in_dato_actual(const abb_iter_t *iter);
 
 /*
 Pre: El iterador fue creado
